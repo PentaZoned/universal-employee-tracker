@@ -20,3 +20,14 @@ inquirer
             name: "userChoice"
         }
     ])
+    .then((data) => {
+        if(data.userChoice === "View All Employees") {
+            viewEmployees();
+        }
+    });
+
+function viewEmployees() {
+    db.query('SELECT first_name, last_name FROM employee LEFT JOIN role ON employee.role_id = role.id;', function (err, results) {
+        console.log(results);
+    });
+};
