@@ -13,6 +13,10 @@ const db = mysql.createConnection({
     console.log("Connected to the database.")
 );
 
+var departmentArray = ["Sales", "Engineering", "Finance", "Legal"];
+var roleArray = ["Sales Lead", "Salesperson", "Lead Engineer", "Software Engineer", "Account Manager", "Accountant", "Legal Team Lead", "Lawyer"];
+var employeeArray = ["John Doe", "Mike Chan", "Ashley Rodriguez", "Kevin Tupik", "Kunal Singh", "Malia Brown", "Sarah Lourd", "Tom Allen"];
+
 // Inquirer function to prompt the user questions  and retrieve user input
 function repeatInquirer() {
     inquirer
@@ -90,28 +94,39 @@ async function viewEmployee() {
     }
 };
 
-function addDepartment() {
-    inquirer
-        .prompt([
-            {
-            type: "input",
-            message: "What is the name of the department you want to add?",
-            name: "departmentName",
-            },
-        ])
-        .then((data) => {
-            db.query(`INSERT INTO department (name)
+function addDepartmentQuery() {
+    return new Promise((resolve, reject) => {
+        inquirer
+            .prompt([{
+                type: "input",
+                message: "What is the name of the department you want to add?",
+                name: "departmentName",
+            }, ])
+            .then((data) => {
+                db.query(`INSERT INTO department (name)
                     VALUES (?);`, data.departmentName, function (err, results) {
-                console.log("Department added.");
+                    if (err) {
+                        return reject(err);
+                    }
+                    return resolve(results);
+                });
             });
-            repeatInquirer();
-        });
+    });
 };
+
+async function addDepartment() {
+    try{
+        const result = await addDepartmentQuery();
+        console.log("Department has been created.");
+        repeatInquirer();
+    } catch(err) {
+        console.log(error);
+    }
+}
 
 function addRole() {
     inquirer
-        .prompt([
-            {
+        .prompt([{
                 type: "input",
                 message: "What is the title of the role you want to add?",
                 name: "roleTitle",
@@ -133,9 +148,9 @@ function addRole() {
             var newDeptId = parseInt(data.roleDeptId);
             db.query(`INSERT INTO role (title, salary, department_id)
                     VALUES ("${data.roleTitle}", ${newSalary}, ${newDeptId});`, function (err, results) {
-                    if(err) {
-                        console.log(err);
-                    }
+                if (err) {
+                    console.log(err);
+                }
                 console.log("Role added.");
             });
             repeatInquirer();
@@ -144,8 +159,7 @@ function addRole() {
 
 function addEmployee() {
     inquirer
-        .prompt([
-            {
+        .prompt([{
                 type: "input",
                 message: "What is the first name of the employee you want to add?",
                 name: "firstName",
@@ -170,7 +184,7 @@ function addEmployee() {
 
             db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id)
                      VALUES ("${data.firstName}", "${data.lastName}", ${data.roleId}, ${data.managerId});`, function (err, results) {
-                if(err) {
+                if (err) {
                     console.log(err);
                 } else {
                     console.log("Employee added.");
@@ -182,8 +196,7 @@ function addEmployee() {
 
 function updateRole() {
     inquirer
-        .prompt([
-            {
+        .prompt([{
                 type: "input",
                 message: "Give the id of the employee whose role you want to update.",
                 name: "employeeId",
@@ -199,7 +212,7 @@ function updateRole() {
             db.query(`UPDATE employee
                     SET role_id = ${data.newRoleId}
                     WHERE id = ?`, data.employeeId, function (err, results) {
-                if(err) {
+                if (err) {
                     console.log(err);
                 } else {
                     console.log("Employee profile updated.");
