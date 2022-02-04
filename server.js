@@ -35,9 +35,9 @@ function repeatInquirer() {
             } else if (data.userChoice === "Add Department") {
                 addDepartment();
             } else if (data.userChoice === "Add Role") {
-
+                addRole();
             } else if (data.userChoice === "Add Employee") {
-
+                addEmployee();
             } else if (data.userChoice === "Update Employee's Role") {
 
             } else {
@@ -90,19 +90,54 @@ function addDepartment() {
     inquirer
         .prompt([
             {
-                type: "input",
-                message: "What is the name of the department you want to add?",
-                name: "departmentName",
-            }
+            type: "input",
+            message: "What is the name of the department you want to add?",
+            name: "departmentName",
+            },
         ])
         .then((data) => {
             db.query(`INSERT INTO department (name)
                     VALUES (?);`, data.departmentName, function (err, results) {
-                    console.log("Department added.");
+                console.log("Department added.");
             });
             repeatInquirer();
         });
 };
+
+function addRole() {
+    inquirer
+        .prompt([
+            {
+                type: "input",
+                message: "What is the title of the role you want to add?",
+                name: "roleTitle",
+            },
+            {
+                type: "input",
+                message: "What is the salary of the role?",
+                name: "roleSalary",
+            },
+            {
+                type: "input",
+                message: "What is the department id of the role?",
+                name: "roleDeptId",
+            },
+        ])
+        .then((data) => {
+
+            var newSalary = parseInt(data.roleSalary);
+            var newDeptId = parseInt(data.roleDeptId);
+            db.query(`INSERT INTO role (title, salary, department_id)
+                    VALUES ("${data.roleTitle}", ${newSalary}, ${newDeptId});`, function (err, results) {
+                    if(err) {
+                        console.log(err);
+                    }
+                console.log("Role added.");
+            });
+            repeatInquirer();
+        });
+};
+
 
 
 repeatInquirer();
