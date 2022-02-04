@@ -31,19 +31,20 @@ function repeatInquirer() {
             } else if (data.userChoice === "View All Roles") {
                 viewRoles();
             } else if (data.userChoice === "View All Employees") {
-                viewEmployees();
+                viewEmployee();
             } else if (data.userChoice === "Add Department") {
 
             } else if (data.userChoice === "Add Role") {
-                
+
             } else if (data.userChoice === "Add Employee") {
-            
+
             } else if (data.userChoice === "Update Employee's Role") {
-                
+
             } else {
                 console.log("Press Ctrl + C to exit out of Node.");
                 return;
             }
+            
         });
 }
 
@@ -59,13 +60,29 @@ function viewRoles() {
     });
 };
 
-
-// This function shows all of the current employees and their information
-function viewEmployees() {
-    db.query('SELECT e.id AS Id, e.first_name AS First_Name, e.last_name as Last_name, r.title as Title, d.name AS Department, r.salary as Salary, e.manager_id AS Manager FROM employee e JOIN role r ON e.role_id = r.id JOIN department d ON r.department_id = d.id;', function (err, results) {
-        console.table(results);
+function viewEmployeesQuery(){
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT employee.id AS Id, employee.first_name AS First_Name, employee.last_name as Last_name, role.title as Title, department.name AS Department, role.salary as Salary, manager.first_name AS Manager
+                    FROM employee
+                    LEFT JOIN role ON employee.role_id = role.id
+                    LEFT JOIN department ON role.department_id = department.id
+                    LEFT JOIN employee AS manager ON employee.manager_id = manager.id;`, function (err, results) {
+            if(err) {
+                return reject(err);
+            }
+            return resolve(results);
+        });
     });
-    repeatInquirer();
 };
+
+async function viewEmployee() {
+    try {
+        const result = await viewEmployeesQuery();
+        console.table(result);
+        repeatInquirer();
+    } catch(error) {
+        console.log(error)
+    }
+}
 
 repeatInquirer();
