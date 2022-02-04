@@ -215,32 +215,42 @@ async function addEmployee() {
     }
 };
 
-function updateRole() {
-    inquirer
-        .prompt([{
-                type: "input",
-                message: "Give the id of the employee whose role you want to update.",
-                name: "employeeId",
-            },
-            {
-                type: "input",
-                message: "What is the new role id of the employee?",
-                name: "newRoleId",
-            },
-        ])
-        .then((data) => {
+function updateRoleQuery() {
+    return new Promise((resolve, reject) => {
+        inquirer
+            .prompt([{
+                    type: "input",
+                    message: "Give the id of the employee whose role you want to update.",
+                    name: "employeeId",
+                },
+                {
+                    type: "input",
+                    message: "What is the new role id of the employee?",
+                    name: "newRoleId",
+                },
+            ])
+            .then((data) => {
 
-            db.query(`UPDATE employee
+                db.query(`UPDATE employee
                     SET role_id = ${data.newRoleId}
                     WHERE id = ?`, data.employeeId, function (err, results) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log("Employee profile updated.");
-                }
+                    if (err) {
+                        return reject(err);
+                    }
+                    return resolve(results);
+                });
             });
-            repeatInquirer();
-        });
+    });
 };
+
+async function updateRole() {
+    try {
+        const result = await updateRoleQuery();
+        console.log("Employee's role has been updated.");
+        repeatInquirer();
+    } catch (err) {
+        console.log(error);
+    }
+}
 
 repeatInquirer();
