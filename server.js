@@ -139,8 +139,8 @@ function addRoleQuery() {
                 },
                 {
                     type: "list",
-                    message: "What is the department id of the role?",
-                    choices: roleArray,
+                    message: "What is the department of the role?",
+                    choices: departmentArray,
                     name: "roleDept",
                 },
             ])
@@ -149,8 +149,8 @@ function addRoleQuery() {
                 var newSalary = parseInt(data.roleSalary);
                 var deptSelect;
 
-                for(var i = 0; i < roleArray.length; i++){
-                    if(data.roleDept === roleArray[i]) {
+                for(var i = 0; i < departmentArray.length; i++){
+                    if(data.roleDept === departmentArray[i]) {
                         deptSelect = i + 1;
                     }
                 };
