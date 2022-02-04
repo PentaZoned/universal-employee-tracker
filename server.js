@@ -39,13 +39,13 @@ function repeatInquirer() {
             } else if (data.userChoice === "Add Employee") {
                 addEmployee();
             } else if (data.userChoice === "Update Employee's Role") {
-
+                updateRole();
             } else {
                 console.log("Press Ctrl + C to exit out of Node.");
                 return;
             }
         });
-}
+};
 
 function viewDepartments() {
     db.query('SELECT id AS Id, name as Name FROM department;', function (err, results) {
@@ -84,7 +84,7 @@ async function viewEmployee() {
     } catch (error) {
         console.log(error)
     }
-}
+};
 
 function addDepartment() {
     inquirer
@@ -174,6 +174,35 @@ function addEmployee() {
             });
             repeatInquirer();
         });
-}
+};
+
+function updateRole() {
+    inquirer
+        .prompt([
+            {
+                type: "input",
+                message: "Give the id of the employee whose role you want to update.",
+                name: "employeeId",
+            },
+            {
+                type: "input",
+                message: "What is the new role id of the employee?",
+                name: "newRoleId",
+            },
+        ])
+        .then((data) => {
+
+            db.query(`UPDATE employee
+                    SET role_id = ${data.newRoleId}
+                    WHERE id = ?`, data.employeeId, function (err, results) {
+                if(err) {
+                    console.log(err);
+                } else {
+                    console.log("Employee profile updated.");
+                }
+            });
+            repeatInquirer();
+        });
+};
 
 repeatInquirer();
