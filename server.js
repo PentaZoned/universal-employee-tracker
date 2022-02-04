@@ -148,7 +148,7 @@ function addRoleQuery() {
 
                 var newSalary = parseInt(data.roleSalary);
                 var deptSelect;
-                
+
                 for(var i = 0; i < roleArray.length; i++){
                     if(data.roleDept === roleArray[i]) {
                         deptSelect = i + 1;
@@ -189,20 +189,38 @@ function addEmployeeQuery() {
                     name: "lastName",
                 },
                 {
-                    type: "input",
-                    message: "What is the role id of the employee?",
-                    name: "roleId",
+                    type: "list",
+                    message: "What is the role of the employee?",
+                    choices: roleArray,
+                    name: "empRole",
                 },
                 {
-                    type: "input",
-                    message: "What is the manager id of the employee?",
-                    name: "managerId",
+                    type: "list",
+                    message: "Who is the manager of this employee?",
+                    choices: employeeArray,
+                    name: "empManager",
                 },
             ])
             .then((data) => {
 
+                var roleSelect;
+
+                for(var i = 0; i < roleArray.length; i++){
+                    if(data.empRole === roleArray[i]) {
+                        roleSelect = i + 1;
+                    }
+                };
+
+                var managerSelect;
+
+                for(var i = 0; i < employeeArray.length; i++){
+                    if(data.empManager === employeeArray[i]) {
+                        managerSelect = i + 1;
+                    }
+                };
+
                 db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id)
-                     VALUES ("${data.firstName}", "${data.lastName}", ${data.roleId}, ${data.managerId});`, function (err, results) {
+                     VALUES ("${data.firstName}", "${data.lastName}", ${roleSelect}, ${managerSelect});`, function (err, results) {
                     if (err) {
                         return reject(err);
                     }
