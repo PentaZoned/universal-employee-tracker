@@ -33,7 +33,7 @@ function repeatInquirer() {
             } else if (data.userChoice === "View All Employees") {
                 viewEmployee();
             } else if (data.userChoice === "Add Department") {
-
+                addDepartment();
             } else if (data.userChoice === "Add Role") {
 
             } else if (data.userChoice === "Add Employee") {
@@ -44,30 +44,31 @@ function repeatInquirer() {
                 console.log("Press Ctrl + C to exit out of Node.");
                 return;
             }
-            
         });
 }
 
 function viewDepartments() {
-    db.query('SELECT id AS Id, name as Name FROM department;', function(err, results) {
+    db.query('SELECT id AS Id, name as Name FROM department;', function (err, results) {
         console.table(results);
+        repeatInquirer();
     });
 };
 
 function viewRoles() {
-    db.query('SELECT id AS Id, title AS Title, Salary AS Salary, department_id AS Department_Id FROM role;', function(err, results) {
+    db.query('SELECT id AS Id, title AS Title, Salary AS Salary, department_id AS Department_Id FROM role;', function (err, results) {
         console.table(results);
+        repeatInquirer();
     });
 };
 
-function viewEmployeesQuery(){
+function viewEmployeesQuery() {
     return new Promise((resolve, reject) => {
         db.query(`SELECT employee.id AS Id, employee.first_name AS First_Name, employee.last_name as Last_name, role.title as Title, department.name AS Department, role.salary as Salary, manager.first_name AS Manager
                     FROM employee
                     LEFT JOIN role ON employee.role_id = role.id
                     LEFT JOIN department ON role.department_id = department.id
                     LEFT JOIN employee AS manager ON employee.manager_id = manager.id;`, function (err, results) {
-            if(err) {
+            if (err) {
                 return reject(err);
             }
             return resolve(results);
@@ -80,9 +81,28 @@ async function viewEmployee() {
         const result = await viewEmployeesQuery();
         console.table(result);
         repeatInquirer();
-    } catch(error) {
+    } catch (error) {
         console.log(error)
     }
 }
+
+function addDepartment() {
+    inquirer
+        .prompt([
+            {
+                type: "input",
+                message: "What is the name of the department you want to add?",
+                name: "departmentName",
+            }
+        ])
+        .then((data) => {
+            db.query(`INSERT INTO department (name)
+                    VALUES (?);`, data.departmentName, function (err, results) {
+                    console.log("Department added.");
+            });
+            repeatInquirer();
+        });
+};
+
 
 repeatInquirer();
