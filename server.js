@@ -120,7 +120,7 @@ async function addDepartment() {
         console.log("Department has been created.");
         repeatInquirer();
     } catch (err) {
-        console.log(error);
+        console.log(err);
     }
 };
 
@@ -171,7 +171,7 @@ async function addRole() {
         console.log("Role has been created.");
         repeatInquirer();
     } catch (err) {
-        console.log(error);
+        console.log(err);
     }
 };
 
@@ -213,9 +213,9 @@ function addEmployeeQuery() {
 
                 var managerSelect;
 
-                for(var i = 0; i < employeeArray.length; i++){
-                    if(data.empManager === employeeArray[i]) {
-                        managerSelect = i + 1;
+                for(var j = 0; j < employeeArray.length; j++){
+                    if(data.empManager === employeeArray[j]) {
+                        managerSelect = j + 1;
                     }
                 };
 
@@ -236,7 +236,7 @@ async function addEmployee() {
         console.log("Employee has been added.");
         repeatInquirer();
     } catch (err) {
-        console.log(error);
+        console.log(err);
     }
 };
 
@@ -244,21 +244,39 @@ function updateRoleQuery() {
     return new Promise((resolve, reject) => {
         inquirer
             .prompt([{
-                    type: "input",
-                    message: "Give the id of the employee whose role you want to update.",
-                    name: "employeeId",
+                    type: "list",
+                    message: "Which employee do you want to update their role for?",
+                    choices: employeeArray,
+                    name: "specEmployee",
                 },
                 {
-                    type: "input",
-                    message: "What is the new role id of the employee?",
-                    name: "newRoleId",
+                    type: "list",
+                    message: "What is the new role of the employee?",
+                    choices: roleArray,
+                    name: "specRole",
                 },
             ])
             .then((data) => {
 
+                var empSelect;
+
+                for(var i = 0; i < employeeArray.length; i++){
+                    if(data.specEmployee === employeeArray[i]) {
+                        empSelect = i + 1;
+                    }
+                };
+
+                var roleSelect;
+
+                for(var j = 0; j < roleArray.length; j++){
+                    if(data.specRole === roleArray[j]) {
+                        roleSelect = j + 1;
+                    }
+                };
+
                 db.query(`UPDATE employee
-                    SET role_id = ${data.newRoleId}
-                    WHERE id = ?`, data.employeeId, function (err, results) {
+                    SET role_id = ${roleSelect}
+                    WHERE id = ?`, empSelect, function (err, results) {
                     if (err) {
                         return reject(err);
                     }
@@ -274,7 +292,7 @@ async function updateRole() {
         console.log("Employee's role has been updated.");
         repeatInquirer();
     } catch (err) {
-        console.log(error);
+        console.log(err);
     }
 }
 
