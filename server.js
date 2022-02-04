@@ -138,17 +138,24 @@ function addRoleQuery() {
                     name: "roleSalary",
                 },
                 {
-                    type: "input",
+                    type: "list",
                     message: "What is the department id of the role?",
-                    name: "roleDeptId",
+                    choices: roleArray,
+                    name: "roleDept",
                 },
             ])
             .then((data) => {
 
                 var newSalary = parseInt(data.roleSalary);
-                var newDeptId = parseInt(data.roleDeptId);
+                var deptSelect;
+                
+                for(var i = 0; i < roleArray.length; i++){
+                    if(data.roleDept === roleArray[i]) {
+                        deptSelect = i + 1;
+                    }
+                };
                 db.query(`INSERT INTO role (title, salary, department_id)
-                    VALUES ("${data.roleTitle}", ${newSalary}, ${newDeptId});`, function (err, results) {
+                    VALUES ("${data.roleTitle}", ${newSalary}, ${deptSelect});`, function (err, results) {
                     if (err) {
                         return reject(err);
                     }
