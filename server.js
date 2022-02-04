@@ -103,6 +103,8 @@ function addDepartmentQuery() {
                 name: "departmentName",
             }, ])
             .then((data) => {
+
+                departmentArray.push(data.departmentName);
                 db.query(`INSERT INTO department (name)
                     VALUES (?);`, data.departmentName, function (err, results) {
                     if (err) {
@@ -146,6 +148,7 @@ function addRoleQuery() {
             ])
             .then((data) => {
 
+                roleArray.push(data.roleTitle);
                 var newSalary = parseInt(data.roleSalary);
                 var deptSelect;
 
@@ -203,6 +206,7 @@ function addEmployeeQuery() {
             ])
             .then((data) => {
 
+                employeeArray.push(data.firstName + " " + data.lastName);
                 var roleSelect;
 
                 for(var i = 0; i < roleArray.length; i++){
